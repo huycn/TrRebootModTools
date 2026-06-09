@@ -96,7 +96,7 @@ class Tr2013MeshBase(ITr2013Mesh, MeshBase[TModelDataHeader, TMeshPart]):
 
         if self.model_data_header.has_blend_shapes:
             reader.position = model_data_header_pos + self.mesh_header.blend_shapes_header_offset
-            self.blend_shapes = BlendShape.read(reader, model_data_header_pos, self.model_data_header.num_blend_shapes, blend_shape_names, self.mesh_header.num_vertices)
+            self.blend_shapes = BlendShape.read(reader, False, model_data_header_pos, self.model_data_header.num_blend_shapes, blend_shape_names, self.mesh_header.num_vertices)
 
         reader.position = return_pos
 

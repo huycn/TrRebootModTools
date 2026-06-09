@@ -33,29 +33,53 @@ class BlendShape(SlotsBase):
         self.vertices = {}
 
     @staticmethod
-    def read(reader: BinaryReader, model_data_header_pos: int, num_blend_shapes: int, blend_shape_names: list[str] | None, num_vertices: int) -> list[Optional["BlendShape"]]:
+    def read(reader: BinaryReader, isShadow: bool, model_data_header_pos: int, num_blend_shapes: int, blend_shape_names: list[str] | None, num_vertices: int) -> list[Optional["BlendShape"]]:
         header = reader.read_struct(_BlendShapesHeader)
-
-        reader.position = model_data_header_pos + header.blend_shape_bitmask_ptr
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.blend_shape_bitmask_ptr
+        
         supported_blendshape_bitmasks: Sequence[int] = reader.read_uint32_list((num_blend_shapes + 0x1F) >> 5)
+        
         if header.num_blend_shapes == 0:
             reader.align(0x20)
             return []
 
-        reader.position = model_data_header_pos + header.segments_offset
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.segments_offset
+        
         num_vertex_batches: int = (num_vertices + 0x3F) >> 6
         blend_shape_ranges: Sequence[int] = reader.read_uint32_list(num_vertex_batches * header.num_blend_shapes)
 
-        reader.position = model_data_header_pos + header.positions_offset
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.positions_offset
+        
         position_offsets: Sequence[int] = reader.read_uint32_list(header.num_vertex_offsets)
 
-        reader.position = model_data_header_pos + header.normals_offset
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.normals_offset
+        
         normal_offsets: Sequence[int] = reader.read_uint32_list(header.num_vertex_offsets)
 
-        reader.position = model_data_header_pos + header.colors_offset
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.colors_offset
+        
         color_offsets: Sequence[int] = reader.read_uint32_list(header.num_vertex_offsets)
 
-        reader.position = model_data_header_pos + header.vertex_indices_offset
+        if isShadow:
+            reader.align(0x20)
+        else:
+            reader.position = model_data_header_pos + header.vertex_indices_offset
+        
         vertex_indices: memoryview = reader.read_bytes(header.num_vertex_offsets)
         reader.align(0x20)
 

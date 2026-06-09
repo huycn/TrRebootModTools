@@ -78,7 +78,7 @@ class ShadowMesh(MeshBase[ShadowModelDataHeader, ShadowMeshPart]):
             self.vertices.append(vertex)
 
         if self.model_data_header.has_blend_shapes:
-            self.blend_shapes = BlendShape.read(reader, 0, self.model_data_header.num_blend_shapes, None, self.mesh_header.num_vertices)
+            self.blend_shapes = BlendShape.read(reader, True, 0, self.model_data_header.num_blend_shapes, None, self.mesh_header.num_vertices)
 
     def write_header(self, writer: BinaryWriter) -> None:
         self.mesh_header.num_parts = len(self.parts)
