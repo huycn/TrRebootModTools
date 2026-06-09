@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TrRebootTools.Shared;
 using TrRebootTools.Shared.Cdc;
@@ -26,13 +27,14 @@ namespace TrRebootTools.Extractor
             try
             {
                 bool forceGamePrompt = false;
+                bool includeMods = args.Contains("--with-mods");
                 while (true)
                 {
                     (CdcGame? game, string? gameFolderPath) = await GameSelectionWindow.GetGameAsync(forceGamePrompt);
                     if (game == null || gameFolderPath == null)
                         break;
 
-                    MainWindow window = new(gameFolderPath, game.Value);
+                    MainWindow window = new(gameFolderPath, game.Value, includeMods);
                     await App.ShowDialogAsync(window);
                     if (!window.GameSelectionRequested)
                         break;

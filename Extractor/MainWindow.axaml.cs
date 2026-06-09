@@ -22,7 +22,7 @@ namespace TrRebootTools.Extractor
             InitializeComponent();
         }
 
-        public MainWindow(string gameFolderPath, CdcGame game)
+        public MainWindow(string gameFolderPath, CdcGame game, bool includeMods)
             : this()
         {
             CdcGameInfo gameInfo = CdcGameInfo.Get(game);
@@ -30,7 +30,7 @@ namespace TrRebootTools.Extractor
             Title = $"{gameInfo.ShortName} Extractor {version.Major}.{version.Minor}.{version.Build}";
             _imgSelectGame.Source = gameInfo.Icon;
 
-            _archiveSet = ArchiveSet.Open(gameFolderPath, true, false, game);
+            _archiveSet = ArchiveSet.Open(gameFolderPath, true, includeMods, game);
             _resourceUsages = new ResourceUsageCache();
 
             if (OperatingSystem.IsLinux())
