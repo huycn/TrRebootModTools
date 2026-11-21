@@ -12,8 +12,12 @@ class HairImporter:
     POINT_FACTOR_GEOMETRY_NODES_NAME = "Factor for strand coloring"
     POINT_FACTOR_ATTR_NAME = "hair_point_factor"
     MASTER_STRANDS_MATERIAL_COLOR = (0, 0, 1, 1)
-    DEFAULT_HAIR_ROOT_COLOR = (0, 0, 0, 1)
-    DEFAULT_HAIR_TIP_COLOR  = (1, 1, 1, 1)
+    # Approximation of Lara's in-game hair (linear colors sampled from a SOTTR screenshot); the strand hair
+    # resources don't reference a color the importer can read
+    DEFAULT_HAIR_ROOT_COLOR = (0.0414, 0.0245, 0.0164, 1)
+    DEFAULT_HAIR_TIP_COLOR  = (0.0688, 0.0395, 0.0248, 1)
+    DEFAULT_HAIR_SPECULAR_TINT  = (0.49, 0.26, 0.14, 1)
+    DEFAULT_HAIR_SPECULAR_LEVEL = 0.3
 
     scale_factor: float
     bl_target_collection: bpy.types.Collection | None
@@ -189,8 +193,10 @@ class HairImporter:
         # Attribute.Fac -> Color Ramp.Fac
         bl_node_group.links.new(bl_attr_node.outputs[2], bl_color_ramp_node.inputs[0])
 
-        bl_shader_node = bl_node_group.nodes.new("ShaderNodeBsdfPrincipled")
+        bl_shader_node = cast(bpy.types.ShaderNodeBsdfPrincipled, bl_node_group.nodes.new("ShaderNodeBsdfPrincipled"))
         bl_shader_node.location = (500, 0)
+        cast(bpy.types.NodeSocketColor, bl_shader_node.inputs["Specular Tint"]).default_value = HairImporter.DEFAULT_HAIR_SPECULAR_TINT
+        cast(bpy.types.NodeSocketFloat, bl_shader_node.inputs["Specular IOR Level"]).default_value = HairImporter.DEFAULT_HAIR_SPECULAR_LEVEL
 
         # Color Ramp.Color -> Shader.Color
         bl_node_group.links.new(bl_color_ramp_node.outputs[0], bl_shader_node.inputs[0])
